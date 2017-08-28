@@ -7,10 +7,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Desktop/ojdbc6-12.1.0.2.jar!/" />
+          <root url="jar://H:/lib/ojdbc6-12.1.0.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

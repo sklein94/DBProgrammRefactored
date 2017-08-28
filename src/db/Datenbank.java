@@ -35,6 +35,7 @@ public class Datenbank {
         catch (SQLException e) {
             System.out.println("Exception: " + e.getMessage());
         }
+
     }
 
     public void printSQL(String query) throws Exception{
@@ -53,5 +54,34 @@ public class Datenbank {
             }
             System.out.println();
         }
+    }
+
+    public String[][] asArray(String query) throws Exception{
+        int rows = rows(query);
+        ResultSet rs = stmt.executeQuery(query);
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columns = rsmd.getColumnCount();
+
+        String[][] result = new String[rows+1][columns];
+        for (int i = 1; i <= columns; i++){
+            result[0][i-1] = rsmd.getColumnName(i);
+        }
+
+        int count = 1;
+        while (rs.next()){
+            for (int i = 0; i < columns; i++){
+                System.out.println(rs.getString(i+1));
+                result[count][i] = rs.getString(i+1);
+            }
+            count++;
+        }
+        return result;
+    }
+
+    private int rows(String query) throws SQLException {
+        ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS NumberOfRows FROM ("+query+")");
+        rs.next();
+        return Integer.valueOf(rs.getString("NumberOfRows"));
+
     }
 }

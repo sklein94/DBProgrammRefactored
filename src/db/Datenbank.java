@@ -173,4 +173,8 @@ public class Datenbank {
         return Integer.valueOf(rs.getString("NumberOfRows"));
 
     }
+
+    public int integerQuery(String sql) throws Exception{
+        return stmt.executeUpdate(sql);
+    }
 }

@@ -140,15 +140,18 @@ public class TabelleController implements EventHandler<TableColumn.CellEditEvent
                 try {
                     db.integerQuery(sql);
                     load();
+                    vornameAdd.clear();
+                    abteilungAdd.clear();
+                    gehaltAdd.clear();
+                    nameAdd.clear();
+                    fehler.setText("Mitarbeiter erfolgreich hinzugefuegt.");
                 }
-                catch (Exception e) {
-                    e.printStackTrace();
+                catch (SQLException sq) {
+                    fehler.setText("Konnte neuen Mitarbeiter nicht hinzufuegen.");
+
                 }
 
                 load();
-                table.setItems(tableData);
-                table.refresh();
-
             }
         });
 
@@ -159,7 +162,7 @@ public class TabelleController implements EventHandler<TableColumn.CellEditEvent
     private void addListenerToReloadOn(TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
             load();
-                });
+        });
     }
 
     private boolean isHereAfterFiltering(Mitarbeiter mitarbeiter) {

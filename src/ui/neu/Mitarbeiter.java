@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 
 public class Mitarbeiter {
     private final StringProperty id;
@@ -47,15 +48,11 @@ public class Mitarbeiter {
     public StringProperty getVornameProperty() {
         return this.vorname;
     }
-    public void setVorname(String vorname) {
-        try {
-            Datenbank db = new Datenbank();
-            db.integerQuery("UPDATE Mitarbeiter SET Vorname='" + vorname + "' WHERE ID=" + this.getID());
-            this.vorname.set(vorname);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+
+    public void setVorname(String vorname) throws SQLException {
+        Datenbank db = new Datenbank();
+        db.integerQuery("UPDATE Mitarbeiter SET Vorname='" + vorname + "' WHERE ID=" + this.getID());
+        this.vorname.set(vorname);
     }
 
 
@@ -67,15 +64,10 @@ public class Mitarbeiter {
         return name;
     }
 
-    public void setName(String name) {
-        try {
-            Datenbank db = new Datenbank();
-            db.integerQuery("UPDATE Mitarbeiter SET Name='" + name + "' WHERE ID=" + this.getID());
-            this.name.set(name);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void setName(String name) throws SQLException {
+        Datenbank db = new Datenbank();
+        db.integerQuery("UPDATE Mitarbeiter SET Name='" + name + "' WHERE ID=" + this.getID());
+        this.name.set(name);
     }
 
     public String getGehalt() {
@@ -86,18 +78,14 @@ public class Mitarbeiter {
         return gehalt;
     }
 
-    public void setGehalt(String gehalt) {
-        try {
-            BigDecimal bd = new BigDecimal(gehalt);
-            if (bd.compareTo(new BigDecimal("100000")) == -1) {
-                Datenbank db = new Datenbank();
-                db.integerQuery("UPDATE Mitarbeiter SET Gehalt=" + gehalt + " WHERE ID=" + this.getID());
-                this.gehalt.set(gehalt);
-            }
+    public void setGehalt(String gehalt) throws SQLException {
+        BigDecimal bd = new BigDecimal(gehalt);
+        if (bd.compareTo(new BigDecimal("100000")) == -1) {
+            Datenbank db = new Datenbank();
+            db.integerQuery("UPDATE Mitarbeiter SET Gehalt=" + gehalt + " WHERE ID=" + this.getID());
+            this.gehalt.set(gehalt);
         }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        else throw new NumberFormatException();
     }
 
     public String getAbteilung() {
@@ -108,21 +96,15 @@ public class Mitarbeiter {
         return abteilung;
     }
 
-    public void setAbteilung(String abteilung) {
-
-        try {
-            Datenbank db = new Datenbank();
-            String sql = "UPDATE Mitarbeiter SET Abteilung_ID=(select ID from Abteilungsuebersicht WHERE Name='" + abteilung + "') WHERE ID=" + this.getID();
-            db.integerQuery(sql);
-            this.abteilung.set(abteilung);
-            String sqlx = "SELECT Standort, Land FROM Mitarbeiteruebersicht WHERE ID=" + this.getID();
-            String[][] arr = db.asArray(sqlx);
-            this.setStandort(arr[1][0]);
-            this.setLand(arr[1][1]);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void setAbteilung(String abteilung) throws SQLException {
+        Datenbank db = new Datenbank();
+        String sql = "UPDATE Mitarbeiter SET Abteilung_ID=(select ID from Abteilungsuebersicht WHERE Name='" + abteilung + "') WHERE ID=" + this.getID();
+        db.integerQuery(sql);
+        this.abteilung.set(abteilung);
+        String sqlx = "SELECT Standort, Land FROM Mitarbeiteruebersicht WHERE ID=" + this.getID();
+        String[][] arr = db.asArray(sqlx);
+        this.setStandort(arr[1][0]);
+        this.setLand(arr[1][1]);
     }
 
     public String getStandort() {
@@ -134,13 +116,8 @@ public class Mitarbeiter {
     }
 
     public void setStandort(String standort) {
-        try {
-            Datenbank db = new Datenbank();
-            this.standort.set(standort);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        Datenbank db = new Datenbank();
+        this.standort.set(standort);
     }
 
     public String getLand() {
@@ -152,12 +129,7 @@ public class Mitarbeiter {
     }
 
     public void setLand(String land) {
-        try {
-            Datenbank db = new Datenbank();
-            this.land.set(land);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        Datenbank db = new Datenbank();
+        this.land.set(land);
     }
 }

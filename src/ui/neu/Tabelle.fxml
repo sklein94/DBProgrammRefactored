@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="ui.neu.TabelleController"  prefHeight="500.0" prefWidth="900.0">
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="ui.neu.TabelleController"  prefHeight="575.0" prefWidth="900.0">
     <children>
         <VBox id="VBox" alignment="TOP_LEFT" spacing="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
             <HBox id="HBox" alignment="TOP_LEFT" spacing="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
@@ -34,16 +34,38 @@
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                 </columnResizePolicy>
             </TableView>
-            <HBox id="HBox" alignment="TOP_LEFT" spacing="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <HBox id="HBox" alignment="TOP_CENTER" spacing="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                 <children>
-                    <TextField fx:id="vornameAdd" prefWidth="-1.0" HBox.hgrow="ALWAYS"/>
-                    <TextField fx:id="nameAdd" prefWidth="-1.0" HBox.hgrow="ALWAYS"/>
-                    <TextField fx:id="gehaltAdd" prefWidth="-1.0" HBox.hgrow="ALWAYS"/>
-                    <TextField fx:id="abteilungAdd" prefWidth="-1.0" HBox.hgrow="ALWAYS"/>
-                    <TextField fx:id="standortAdd" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
-                    <TextField fx:id="landAdd" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+                    <Label text="Neuen Mitarbeiter hinzufuegen"></Label>
                 </children>
             </HBox>
+            <HBox id="HBox" alignment="TOP_LEFT" spacing="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                <children>
+                    <VBox>
+                        <Label text=" "></Label>
+                        <Button fx:id="mitarbeiterAdd" prefWidth="150" HBox.hgrow="ALWAYS" text="Hinzufuegen"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="Vorname"></Label>
+                     <TextField fx:id="vornameAdd" prefWidth="-1.0" HBox.hgrow="ALWAYS"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="Name"></Label>
+                        <TextField fx:id="nameAdd" prefWidth="-1.0" HBox.hgrow="ALWAYS"/>
+                    </VBox>
+                    <VBox>
+                        <Label text="Gehalt"></Label>
+                        <TextField fx:id="gehaltAdd" prefWidth="-1.0" HBox.hgrow="ALWAYS"/>
+                    </VBox>
+                    <VBox>
+                    <Label text="Abteilung"></Label>
+                        <TextField fx:id="abteilungAdd" prefWidth="-1.0" HBox.hgrow="ALWAYS"/>
+                    </VBox>
+                </children>
+            </HBox>
+            <VBox>
+                <Label fx:id="fehler"></Label>
+            </VBox>
         </VBox>
     </children>
 </AnchorPane>

@@ -24,13 +24,13 @@ public class Datenbank {
             Driver myDriver = new oracle.jdbc.driver.OracleDriver();
             DriverManager.registerDriver(myDriver);
             this.con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            con.setAutoCommit(false);
             stmt = con.createStatement();
         }
         catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
-
     }
 
     public void printSQL(String query) throws Exception {
@@ -50,33 +50,12 @@ public class Datenbank {
             }
             System.out.println();
         }
+        con.commit();
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public void printSQLComplex(String query) throws Exception {
-        int rows = rows(query)+1;
+    public void printSQLComplex(String query) throws SQLException {
+        int rows = rows(query) + 1;
         ResultSet rs = stmt.executeQuery(query);
         ResultSetMetaData rsmd = rs.getMetaData();
         int columns = rsmd.getColumnCount();
@@ -142,11 +121,10 @@ public class Datenbank {
             System.out.format(formatDesign);
         }
         else System.out.println("Zu viele oder zu wenige Spalten! (1-5)");
-
-
+        con.commit();
     }
 
-    public String[][] asArray(String query) throws Exception {
+    public String[][] asArray(String query) throws SQLException {
         int rows = rows(query);
         ResultSet rs = stmt.executeQuery(query);
         ResultSetMetaData rsmd = rs.getMetaData();
@@ -164,17 +142,26 @@ public class Datenbank {
             }
             count++;
         }
+        con.commit();
         return result;
     }
 
     private int rows(String query) throws SQLException {
         ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS NumberOfRows FROM (" + query + ")");
         rs.next();
+        con.commit();
         return Integer.valueOf(rs.getString("NumberOfRows"));
-
     }
 
-    public int integerQuery(String sql) throws Exception{
-        return stmt.executeUpdate(sql);
+    public int integerQuery(String sql) throws SQLException {
+        int returnValue = stmt.executeUpdate(sql);
+        con.commit();
+        return returnValue;
+    }
+
+    public boolean booleanQuery(String sql) throws SQLException {
+        boolean returnValue = stmt.execute(sql);
+        con.commit();
+        return returnValue;
     }
 }

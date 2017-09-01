@@ -2,7 +2,7 @@ package ui.neu;
 
 
 import db.Datenbank;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -96,15 +96,11 @@ public class TabelleController implements EventHandler<TableColumn.CellEditEvent
         name.setCellFactory(TextFieldTableCell.forTableColumn());
         name.setOnEditCommit(this);
 
-        gehalt.setCellValueFactory(
-                film -> {
-                    String gehalt = film.getValue().getGehalt();
-                    SimpleStringProperty property = new SimpleStringProperty();
-                    property.setValue(gehalt + " €");
-                    return property;
-                });
+        gehalt.setCellValueFactory(cellData -> cellData.getValue().getGehaltProperty());
         gehalt.setCellFactory(TextFieldTableCell.forTableColumn());
         gehalt.setOnEditCommit(this);
+        gehalt.setCellValueFactory(cellData ->
+                Bindings.format("%.2f €", Double.valueOf(cellData.getValue().getGehalt())));
 
 
         abteilung.setCellValueFactory(cellData -> cellData.getValue().getAbteilungProperty());
@@ -168,13 +164,13 @@ public class TabelleController implements EventHandler<TableColumn.CellEditEvent
     private boolean isHereAfterFiltering(Mitarbeiter mitarbeiter) {
         boolean ok = true;
 
-        ok = ok && (mitarbeiter.getID().contains(idFilter.getText()) || idFilter.getText() == null);
-        ok = ok && (mitarbeiter.getVorname().contains(vornameFilter.getText()) || vornameFilter.getText() == null);
-        ok = ok && (mitarbeiter.getName().contains(nameFilter.getText()) || nameFilter.getText() == null);
-        ok = ok && (mitarbeiter.getGehalt().contains(gehaltFilter.getText()) || gehaltFilter.getText() == null);
-        ok = ok && (mitarbeiter.getAbteilung().contains(abteilungFilter.getText()) || abteilungFilter.getText() == null);
-        ok = ok && (mitarbeiter.getStandort().contains(standortFilter.getText()) || standortFilter.getText() == null);
-        ok = ok && (mitarbeiter.getLand().contains(landFilter.getText()) || landFilter.getText() == null);
+        ok = ok && (mitarbeiter.getID().toLowerCase().contains(idFilter.getText().toLowerCase()) || idFilter.getText().toLowerCase() == null);
+        ok = ok && (mitarbeiter.getVorname().toLowerCase().contains(vornameFilter.getText().toLowerCase()) || vornameFilter.getText().toLowerCase() == null);
+        ok = ok && (mitarbeiter.getName().toLowerCase().contains(nameFilter.getText().toLowerCase()) || nameFilter.getText().toLowerCase() == null);
+        ok = ok && (mitarbeiter.getGehalt().toLowerCase().contains(gehaltFilter.getText().toLowerCase()) || gehaltFilter.getText().toLowerCase() == null);
+        ok = ok && (mitarbeiter.getAbteilung().toLowerCase().contains(abteilungFilter.getText().toLowerCase()) || abteilungFilter.getText().toLowerCase() == null);
+        ok = ok && (mitarbeiter.getStandort().toLowerCase().contains(standortFilter.getText().toLowerCase()) || standortFilter.getText().toLowerCase() == null);
+        ok = ok && (mitarbeiter.getLand().toLowerCase().contains(landFilter.getText().toLowerCase()) || landFilter.getText().toLowerCase() == null);
 
         return ok;
     }
@@ -222,6 +218,9 @@ public class TabelleController implements EventHandler<TableColumn.CellEditEvent
                     m.setName(newVal);
                     break;
                 case 3:
+                    newVal = newVal.replace(" ", "");
+                    newVal = newVal.replace("€", "");
+                    newVal = newVal.replace(",", ".");
                     m.setGehalt(newVal);
                     break;
                 case 4:

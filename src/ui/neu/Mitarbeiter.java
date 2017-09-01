@@ -80,12 +80,9 @@ public class Mitarbeiter {
 
     public void setGehalt(String gehalt) throws SQLException {
         BigDecimal bd = new BigDecimal(gehalt);
-        if (bd.compareTo(new BigDecimal("100000")) == -1) {
-            Datenbank db = new Datenbank();
-            db.integerQuery("UPDATE Mitarbeiter SET Gehalt=" + gehalt + " WHERE ID=" + this.getID());
-            this.gehalt.set(gehalt);
-        }
-        else throw new NumberFormatException();
+        Datenbank db = new Datenbank();
+        db.integerQuery("UPDATE Mitarbeiter SET Gehalt=" + gehalt + " WHERE ID=" + this.getID());
+        this.gehalt.set(gehalt);
     }
 
     public String getAbteilung() {

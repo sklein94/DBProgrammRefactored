@@ -166,17 +166,14 @@ public final class TabelleController implements EventHandler<TableColumn.CellEdi
     }
 
     private boolean isHereAfterFiltering(final Mitarbeiter mitarbeiter) {
-        boolean ok = true;
-
-        ok = ok && (mitarbeiter.getID().toLowerCase().contains(idFilter.getText().toLowerCase()) || idFilter.getText().toLowerCase() == null);
-        ok = ok && (mitarbeiter.getVorname().toLowerCase().contains(vornameFilter.getText().toLowerCase()) || vornameFilter.getText().toLowerCase() == null);
-        ok = ok && (mitarbeiter.getName().toLowerCase().contains(nameFilter.getText().toLowerCase()) || nameFilter.getText().toLowerCase() == null);
-        ok = ok && (mitarbeiter.getGehalt().toLowerCase().contains(gehaltFilter.getText().toLowerCase()) || gehaltFilter.getText().toLowerCase() == null);
-        ok = ok && (mitarbeiter.getAbteilung().toLowerCase().contains(abteilungFilter.getText().toLowerCase()) || abteilungFilter.getText().toLowerCase() == null);
-        ok = ok && (mitarbeiter.getStandort().toLowerCase().contains(standortFilter.getText().toLowerCase()) || standortFilter.getText().toLowerCase() == null);
-        ok = ok && (mitarbeiter.getLand().toLowerCase().contains(landFilter.getText().toLowerCase()) || landFilter.getText().toLowerCase() == null);
-
-        return ok;
+        return
+           (mitarbeiter.getID().toLowerCase().contains(idFilter.getText().toLowerCase()) || idFilter.getText().toLowerCase() == null)
+        && (mitarbeiter.getVorname().toLowerCase().contains(vornameFilter.getText().toLowerCase()) || vornameFilter.getText().toLowerCase() == null)
+        && (mitarbeiter.getName().toLowerCase().contains(nameFilter.getText().toLowerCase()) || nameFilter.getText().toLowerCase() == null)
+        && (mitarbeiter.getGehalt().toLowerCase().contains(gehaltFilter.getText().toLowerCase()) || gehaltFilter.getText().toLowerCase() == null)
+        && (mitarbeiter.getAbteilung().toLowerCase().contains(abteilungFilter.getText().toLowerCase()) || abteilungFilter.getText().toLowerCase() == null)
+        && (mitarbeiter.getStandort().toLowerCase().contains(standortFilter.getText().toLowerCase()) || standortFilter.getText().toLowerCase() == null)
+        && (mitarbeiter.getLand().toLowerCase().contains(landFilter.getText().toLowerCase()) || landFilter.getText().toLowerCase() == null);
     }
 
     private void load() {
@@ -191,7 +188,14 @@ public final class TabelleController implements EventHandler<TableColumn.CellEdi
                     tableData = FXCollections.observableArrayList();
                 }
                 else {
-                    Mitarbeiter addable = new ui.neu.Mitarbeiter(temp[0], temp[1], temp[2], temp[3], temp[4], temp[5], temp[6]);
+                    Mitarbeiter addable = new ui.neu.Mitarbeiter(   temp[Mitarbeiter.COLUMN_ID],
+                                                                    temp[Mitarbeiter.COLUMN_VORNAME],
+                                                                    temp[Mitarbeiter.COLUMN_NAME],
+                                                                    temp[Mitarbeiter.COLUMN_GEHALT],
+                                                                    temp[Mitarbeiter.COLUMN_ABTEILUNG],
+                                                                    temp[Mitarbeiter.COLUMN_STANDORT],
+                                                                    temp[Mitarbeiter.COLUMN_LAND]
+                                                                );
                     if (isHereAfterFiltering(addable)) {
                         tableData.add(addable);
                     }
@@ -199,7 +203,6 @@ public final class TabelleController implements EventHandler<TableColumn.CellEdi
             }
         }
         catch (SQLException sqle) {
-            //sqle.printStackTrace();
         }
         catch (Exception e) {
 
@@ -229,6 +232,8 @@ public final class TabelleController implements EventHandler<TableColumn.CellEdi
                     break;
                 case Mitarbeiter.COLUMN_ABTEILUNG:
                     m.setAbteilung(newVal);
+                    break;
+                default:
                     break;
             }
         }

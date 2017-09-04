@@ -104,13 +104,17 @@ public class Mitarbeiter {
 
     public void setAbteilung(final String abteilung) throws SQLException {
         Datenbank db = new Datenbank();
-        String sql = "UPDATE Mitarbeiter SET Abteilung_ID=(select ID from Abteilungsuebersicht WHERE Name='" + abteilung + "') WHERE ID=" + this.getID();
+        String id = this.getID();
+        String sql = "UPDATE Mitarbeiter SET Abteilung_ID=(select ID from Abteilungsuebersicht WHERE Name='" + abteilung + "') WHERE ID=" + id;
         db.integerQuery(sql);
         this.abteilung.set(abteilung);
-        String sqlx = "SELECT Standort, Land FROM Mitarbeiteruebersicht WHERE ID=" + this.getID();
-        String[][] arr = db.asArray(sqlx);
-        this.setStandort(arr[1][0]);
-        this.setLand(arr[1][1]);
+        String sqlx = "SELECT Standort, Land FROM Mitarbeiteruebersicht WHERE ID=" + id;
+        String[][] arrayOfMitarbeiteruebersicht = db.asArray(sqlx);
+        int firstDataRow = 1;
+        int standortPosition = 0;
+        int landPosition = 1;
+        this.setStandort(arrayOfMitarbeiteruebersicht[firstDataRow][standortPosition]);
+        this.setLand(arrayOfMitarbeiteruebersicht[firstDataRow][landPosition]);
     }
 
     public String getStandort() {

@@ -8,6 +8,15 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 
 public class Mitarbeiter {
+    public static final int COLUMN_ID = 0;
+    public static final int COLUMN_VORNAME = 1;
+    public static final int COLUMN_NAME = 2;
+    public static final int COLUMN_GEHALT = 3;
+    public static final int COLUMN_ABTEILUNG = 4;
+    public static final int COLUMN_STANDORT = 5;
+    public static final int COLUMN_LAND = 6;
+
+
     private final StringProperty id;
     private final StringProperty vorname;
     private final StringProperty name;
@@ -16,7 +25,7 @@ public class Mitarbeiter {
     private final StringProperty standort;
     private final StringProperty land;
 
-    public Mitarbeiter(String id, String vorname, String name, String gehalt, String abteilung, String standort, String land) {
+    public Mitarbeiter(final String id, final String vorname, final String name, final String gehalt, final String abteilung, final String standort, final String land) {
         this.id = new SimpleStringProperty(id);
         this.vorname = new SimpleStringProperty(vorname);
         this.name = new SimpleStringProperty(name);
@@ -35,7 +44,7 @@ public class Mitarbeiter {
         return this.id;
     }
 
-    public void setID(String id) {
+    public void setID(final String id) {
         this.id.set(id);
     }
 
@@ -49,7 +58,7 @@ public class Mitarbeiter {
         return this.vorname;
     }
 
-    public void setVorname(String vorname) throws SQLException {
+    public void setVorname(final String vorname) throws SQLException {
         Datenbank db = new Datenbank();
         db.integerQuery("UPDATE Mitarbeiter SET Vorname='" + vorname + "' WHERE ID=" + this.getID());
         this.vorname.set(vorname);
@@ -64,7 +73,7 @@ public class Mitarbeiter {
         return name;
     }
 
-    public void setName(String name) throws SQLException {
+    public void setName(final String name) throws SQLException {
         Datenbank db = new Datenbank();
         db.integerQuery("UPDATE Mitarbeiter SET Name='" + name + "' WHERE ID=" + this.getID());
         this.name.set(name);
@@ -78,7 +87,7 @@ public class Mitarbeiter {
         return gehalt;
     }
 
-    public void setGehalt(String gehalt) throws SQLException {
+    public void setGehalt(final String gehalt) throws SQLException {
         BigDecimal bd = new BigDecimal(gehalt);
         Datenbank db = new Datenbank();
         db.integerQuery("UPDATE Mitarbeiter SET Gehalt=" + gehalt + " WHERE ID=" + this.getID());
@@ -93,7 +102,7 @@ public class Mitarbeiter {
         return abteilung;
     }
 
-    public void setAbteilung(String abteilung) throws SQLException {
+    public void setAbteilung(final String abteilung) throws SQLException {
         Datenbank db = new Datenbank();
         String sql = "UPDATE Mitarbeiter SET Abteilung_ID=(select ID from Abteilungsuebersicht WHERE Name='" + abteilung + "') WHERE ID=" + this.getID();
         db.integerQuery(sql);
@@ -112,7 +121,7 @@ public class Mitarbeiter {
         return standort;
     }
 
-    public void setStandort(String standort) {
+    public void setStandort(final String standort) {
         Datenbank db = new Datenbank();
         this.standort.set(standort);
     }
@@ -125,7 +134,7 @@ public class Mitarbeiter {
         return land;
     }
 
-    public void setLand(String land) {
+    public void setLand(final String land) {
         Datenbank db = new Datenbank();
         this.land.set(land);
     }

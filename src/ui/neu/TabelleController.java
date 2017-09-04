@@ -7,13 +7,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 
 import java.sql.SQLException;
 
-public class TabelleController implements EventHandler<TableColumn.CellEditEvent<ui.neu.Mitarbeiter, String>> {
+public final class TabelleController implements EventHandler<TableColumn.CellEditEvent<ui.neu.Mitarbeiter, String>> {
     @FXML
     private TextField idFilter;
 
@@ -36,7 +40,7 @@ public class TabelleController implements EventHandler<TableColumn.CellEditEvent
     private TextField landFilter;
 
     @FXML
-    private TableView<ui.neu.Mitarbeiter> table;
+    private TableView<Mitarbeiter> table;
 
     @FXML
     private TableColumn<ui.neu.Mitarbeiter, String> id;
@@ -123,16 +127,16 @@ public class TabelleController implements EventHandler<TableColumn.CellEditEvent
         //Button
         mitarbeiterAdd.addEventHandler(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
             @Override
-            public void handle(MouseEvent event) {
-                String vorname = vornameAdd.getText();
-                String name = nameAdd.getText();
-                String gehalt = gehaltAdd.getText();
-                String abteilung = abteilungAdd.getText();
+            public void handle(final MouseEvent event) {
+                String vornameAddString = vornameAdd.getText();
+                String nameAddString = nameAdd.getText();
+                String gehaltAddString = gehaltAdd.getText();
+                String abteilungAddString = abteilungAdd.getText();
                 Datenbank db = new Datenbank();
 
                 String next = "(SELECT Max(ID)+1 FROM Mitarbeiter)";
-                String abteilungID = "(SELECT ID FROM Abteilung WHERE Name='" + abteilung + "')";
-                String sql = "INSERT INTO Mitarbeiter (ID, Vorname, Name, Gehalt, Abteilung_ID) VALUES (" + next + ", '" + vorname + "', '" + name + "', " + gehalt + ", " + abteilungID + ")";
+                String abteilungID = "(SELECT ID FROM Abteilung WHERE Name='" + abteilungAddString + "')";
+                String sql = "INSERT INTO Mitarbeiter (ID, Vorname, Name, Gehalt, Abteilung_ID) VALUES (" + next + ", '" + vornameAddString + "', '" + nameAddString + "', " + gehaltAddString + ", " + abteilungID + ")";
                 try {
                     db.integerQuery(sql);
                     load();
@@ -155,13 +159,13 @@ public class TabelleController implements EventHandler<TableColumn.CellEditEvent
         table.setItems(tableData);
     }
 
-    private void addListenerToReloadOn(TextField textField) {
+    private void addListenerToReloadOn(final TextField textField) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
             load();
         });
     }
 
-    private boolean isHereAfterFiltering(Mitarbeiter mitarbeiter) {
+    private boolean isHereAfterFiltering(final Mitarbeiter mitarbeiter) {
         boolean ok = true;
 
         ok = ok && (mitarbeiter.getID().toLowerCase().contains(idFilter.getText().toLowerCase()) || idFilter.getText().toLowerCase() == null);
@@ -179,10 +183,10 @@ public class TabelleController implements EventHandler<TableColumn.CellEditEvent
         tableData = null;
         Datenbank db = new Datenbank();
         String query = "SELECT * FROM Mitarbeiteruebersicht";
-        String[][] Mitarbeiterdaten;
+        String[][] mitarbeiterdaten;
         try {
-            Mitarbeiterdaten = db.asArray(query);
-            for (String[] temp : Mitarbeiterdaten) {
+            mitarbeiterdaten = db.asArray(query);
+            for (String[] temp : mitarbeiterdaten) {
                 if (tableData == null) {
                     tableData = FXCollections.observableArrayList();
                 }
@@ -195,7 +199,7 @@ public class TabelleController implements EventHandler<TableColumn.CellEditEvent
             }
         }
         catch (SQLException sqle) {
-            sqle.printStackTrace();
+            //sqle.printStackTrace();
         }
         catch (Exception e) {
 
@@ -204,26 +208,26 @@ public class TabelleController implements EventHandler<TableColumn.CellEditEvent
     }
 
     @Override
-    public void handle(TableColumn.CellEditEvent<ui.neu.Mitarbeiter, String> t) {
+    public void handle(final TableColumn.CellEditEvent<ui.neu.Mitarbeiter, String> t) {
         ui.neu.Mitarbeiter m = t.getTableView().getItems().get(t.getTablePosition().getRow());
         String columnName = t.getTableColumn().getText();
         String newVal = t.getNewValue();
         int column = t.getTablePosition().getColumn();
         try {
             switch (column) {
-                case 1:
+                case Mitarbeiter.COLUMN_VORNAME:
                     m.setVorname(newVal);
                     break;
-                case 2:
+                case Mitarbeiter.COLUMN_NAME:
                     m.setName(newVal);
                     break;
-                case 3:
+                case Mitarbeiter.COLUMN_GEHALT:
                     newVal = newVal.replace(" ", "");
                     newVal = newVal.replace("€", "");
-                    newVal = newVal.replace(",", ".");
+                    newVal = newVal.replace(',', '.');
                     m.setGehalt(newVal);
                     break;
-                case 4:
+                case Mitarbeiter.COLUMN_ABTEILUNG:
                     m.setAbteilung(newVal);
                     break;
             }

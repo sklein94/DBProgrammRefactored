@@ -1,9 +1,10 @@
 package db;
 
-import javax.xml.transform.Result;
+
+
 import java.sql.*;
 
-public class Datenbank {
+public final class Datenbank {
     private static final String HOSTNAME = "egmontix";
     private static final String PORT = "1521";
     private static final String SID = "dev3";
@@ -28,13 +29,14 @@ public class Datenbank {
             stmt = con.createStatement();
         }
         catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
+            /*e.printStackTrace();
+            System.exit(1);*/
         }
     }
 
-    public void printSQL(String query) throws Exception {
-        ResultSet rs = stmt.executeQuery(query);
+    public void printSQL(final String query) throws Exception {
+        PreparedStatement ps = con.prepareStatement(query);
+        ResultSet rs = ps.executeQuery();
         ResultSetMetaData rsmd = rs.getMetaData();
         int columns = rsmd.getColumnCount();
 
@@ -54,9 +56,10 @@ public class Datenbank {
     }
 
 
-    public void printSQLComplex(String query) throws SQLException {
+    public void printSQLComplex(final String query) throws SQLException {
+        PreparedStatement ps = con.prepareStatement(query);
         int rows = rows(query) + 1;
-        ResultSet rs = stmt.executeQuery(query);
+        ResultSet rs = ps.executeQuery();
         ResultSetMetaData rsmd = rs.getMetaData();
         int columns = rsmd.getColumnCount();
 
@@ -116,6 +119,8 @@ public class Datenbank {
                     case 8:
                         System.out.format(format, var[0], var[1], var[2], var[3], var[4], var[5], var[6], var[7]);
                         break;
+                    default:
+                        break;
                 }
             }
             System.out.format(formatDesign);
@@ -124,9 +129,10 @@ public class Datenbank {
         con.commit();
     }
 
-    public String[][] asArray(String query) throws SQLException {
+    public String[][] asArray(final String query) throws SQLException {
+        PreparedStatement ps = con.prepareStatement(query);
         int rows = rows(query);
-        ResultSet rs = stmt.executeQuery(query);
+        ResultSet rs = ps.executeQuery();
         ResultSetMetaData rsmd = rs.getMetaData();
         int columns = rsmd.getColumnCount();
 
@@ -146,22 +152,26 @@ public class Datenbank {
         return result;
     }
 
-    private int rows(String query) throws SQLException {
-        ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS NumberOfRows FROM (" + query + ")");
+    private int rows(final String query) throws SQLException {
+        PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) AS NumberOfRows FROM (" + query + ")");
+        ResultSet rs = ps.executeQuery();
         rs.next();
         con.commit();
-        return Integer.valueOf(rs.getString("NumberOfRows"));
+        return Integer.parseInt(rs.getString("NumberOfRows"));
     }
 
-    public int integerQuery(String sql) throws SQLException {
-        int returnValue = stmt.executeUpdate(sql);
+    public int integerQuery(final String sql) throws SQLException {
+        PreparedStatement ps = con.prepareStatement(sql);
+        int returnValue = ps.executeUpdate();
         con.commit();
         return returnValue;
     }
 
     public boolean booleanQuery(final String sql) throws SQLException {
-        boolean returnValue = stmt.execute(sql);
+        PreparedStatement ps = con.prepareStatement(sql);
+        boolean returnValue = ps.execute();
         con.commit();
         return returnValue;
     }
+
 }

@@ -159,7 +159,7 @@ public class Datenbank {
         return returnValue;
     }
 
-    public boolean booleanQuery(String sql) throws SQLException {
+    public boolean booleanQuery(final String sql) throws SQLException {
         boolean returnValue = stmt.execute(sql);
         con.commit();
         return returnValue;

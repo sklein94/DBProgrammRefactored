@@ -5,18 +5,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Mitarbeiter {
-    public static final int COLUMN_ID = 0;
-    public static final int COLUMN_VORNAME = 1;
-    public static final int COLUMN_NAME = 2;
-    public static final int COLUMN_GEHALT = 3;
-    public static final int COLUMN_ABTEILUNG = 4;
-    public static final int COLUMN_STANDORT = 5;
-    public static final int COLUMN_LAND = 6;
-
-
     private final StringProperty id;
     private final StringProperty vorname;
     private final StringProperty name;
@@ -59,8 +53,13 @@ public class Mitarbeiter {
     }
 
     public void setVorname(final String vorname) throws SQLException {
-        Datenbank db = new Datenbank();
-        db.integerQuery("UPDATE Mitarbeiter SET Vorname='" + vorname + "' WHERE ID=" + this.getID());
+        Connection con = Datenbank.giveConnection();
+        PreparedStatement ps = con.prepareStatement("UPDATE Mitarbeiter SET Vorname=? WHERE ID=?");
+        ps.setString(1, vorname);
+        ps.setString(2, this.getID());
+        ps.executeUpdate();
+        con.commit();
+        con.close();
         this.vorname.set(vorname);
     }
 
@@ -74,8 +73,13 @@ public class Mitarbeiter {
     }
 
     public void setName(final String name) throws SQLException {
-        Datenbank db = new Datenbank();
-        db.integerQuery("UPDATE Mitarbeiter SET Name='" + name + "' WHERE ID=" + this.getID());
+        Connection con = Datenbank.giveConnection();
+        PreparedStatement ps = con.prepareStatement("UPDATE Mitarbeiter SET Name=? WHERE ID=?");
+        ps.setString(1, name);
+        ps.setString(2, this.getID());
+        ps.executeUpdate();
+        con.commit();
+        con.close();
         this.name.set(name);
     }
 
@@ -88,9 +92,13 @@ public class Mitarbeiter {
     }
 
     public void setGehalt(final String gehalt) throws SQLException {
-        BigDecimal bd = new BigDecimal(gehalt);
-        Datenbank db = new Datenbank();
-        db.integerQuery("UPDATE Mitarbeiter SET Gehalt=" + gehalt + " WHERE ID=" + this.getID());
+        Connection con = Datenbank.giveConnection();
+        PreparedStatement ps = con.prepareStatement("UPDATE Mitarbeiter SET Gehalt=? WHERE ID=?");
+        ps.setString(1, gehalt);
+        ps.setString(2, this.getID());
+        ps.executeUpdate();
+        con.commit();
+        con.close();
         this.gehalt.set(gehalt);
     }
 
@@ -102,19 +110,19 @@ public class Mitarbeiter {
         return abteilung;
     }
 
+
+
     public void setAbteilung(final String abteilung) throws SQLException {
-        Datenbank db = new Datenbank();
-        String id = this.getID();
-        String sql = "UPDATE Mitarbeiter SET Abteilung_ID=(select ID from Abteilungsuebersicht WHERE Name='" + abteilung + "') WHERE ID=" + id;
-        db.integerQuery(sql);
+        Connection con = Datenbank.giveConnection();
+        PreparedStatement ps = con.prepareStatement("UPDATE Mitarbeiter SET Abteilung_ID=(select ID from Abteilungsuebersicht WHERE Name=?) WHERE ID=?");
+        ps.setString(1, abteilung);
+        ps.setString(2, this.getID());
+        ps.executeUpdate();
+
         this.abteilung.set(abteilung);
-        String sqlx = "SELECT Standort, Land FROM Mitarbeiteruebersicht WHERE ID=" + id;
-        String[][] arrayOfMitarbeiteruebersicht = db.asArray(sqlx);
-        int firstDataRow = 1;
-        int standortPosition = 0;
-        int landPosition = 1;
-        this.setStandort(arrayOfMitarbeiteruebersicht[firstDataRow][standortPosition]);
-        this.setLand(arrayOfMitarbeiteruebersicht[firstDataRow][landPosition]);
+
+        con.commit();
+        con.close();
     }
 
     public String getStandort() {
@@ -126,7 +134,6 @@ public class Mitarbeiter {
     }
 
     public void setStandort(final String standort) {
-        Datenbank db = new Datenbank();
         this.standort.set(standort);
     }
 
@@ -139,7 +146,6 @@ public class Mitarbeiter {
     }
 
     public void setLand(final String land) {
-        Datenbank db = new Datenbank();
         this.land.set(land);
     }
 }

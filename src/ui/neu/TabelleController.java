@@ -15,7 +15,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 public final class TabelleController implements EventHandler<TableColumn.CellEditEvent<ui.neu.Mitarbeiter, String>> {
     @FXML
@@ -134,11 +137,9 @@ public final class TabelleController implements EventHandler<TableColumn.CellEdi
                 String abteilungAddString = abteilungAdd.getText();
                 Datenbank db = new Datenbank();
 
-                String next = "(SELECT Max(ID)+1 FROM Mitarbeiter)";
-                String abteilungID = "(SELECT ID FROM Abteilung WHERE Name='" + abteilungAddString + "')";
-                String sql = "INSERT INTO Mitarbeiter (ID, Vorname, Name, Gehalt, Abteilung_ID) VALUES (" + next + ", '" + vornameAddString + "', '" + nameAddString + "', " + gehaltAddString + ", " + abteilungID + ")";
                 try {
-                    db.integerQuery(sql);
+                    db.addMitarbeiter(vornameAddString, nameAddString, gehaltAddString, abteilungAddString);
+
                     load();
                     vornameAdd.clear();
                     abteilungAdd.clear();
@@ -146,9 +147,11 @@ public final class TabelleController implements EventHandler<TableColumn.CellEdi
                     nameAdd.clear();
                     fehler.setText("Mitarbeiter erfolgreich hinzugefuegt.");
                 }
+                catch (SQLIntegrityConstraintViolationException e){
+                    fehler.setText("Es wurden nicht alle Felder richtig oder vollstaendig ausgefuellt!");
+                }
                 catch (SQLException sq) {
                     fehler.setText("Konnte neuen Mitarbeiter nicht hinzufuegen.");
-
                 }
 
                 load();
@@ -167,13 +170,13 @@ public final class TabelleController implements EventHandler<TableColumn.CellEdi
 
     private boolean isHereAfterFiltering(final Mitarbeiter mitarbeiter) {
         return
-           (mitarbeiter.getID().toLowerCase().contains(idFilter.getText().toLowerCase()) || idFilter.getText().toLowerCase() == null)
-        && (mitarbeiter.getVorname().toLowerCase().contains(vornameFilter.getText().toLowerCase()) || vornameFilter.getText().toLowerCase() == null)
-        && (mitarbeiter.getName().toLowerCase().contains(nameFilter.getText().toLowerCase()) || nameFilter.getText().toLowerCase() == null)
-        && (mitarbeiter.getGehalt().toLowerCase().contains(gehaltFilter.getText().toLowerCase()) || gehaltFilter.getText().toLowerCase() == null)
-        && (mitarbeiter.getAbteilung().toLowerCase().contains(abteilungFilter.getText().toLowerCase()) || abteilungFilter.getText().toLowerCase() == null)
-        && (mitarbeiter.getStandort().toLowerCase().contains(standortFilter.getText().toLowerCase()) || standortFilter.getText().toLowerCase() == null)
-        && (mitarbeiter.getLand().toLowerCase().contains(landFilter.getText().toLowerCase()) || landFilter.getText().toLowerCase() == null);
+                (mitarbeiter.getID().toLowerCase().contains(idFilter.getText().toLowerCase()) || idFilter.getText().toLowerCase() == null)
+                        && (mitarbeiter.getVorname().toLowerCase().contains(vornameFilter.getText().toLowerCase()) || vornameFilter.getText().toLowerCase() == null)
+                        && (mitarbeiter.getName().toLowerCase().contains(nameFilter.getText().toLowerCase()) || nameFilter.getText().toLowerCase() == null)
+                        && (mitarbeiter.getGehalt().toLowerCase().contains(gehaltFilter.getText().toLowerCase()) || gehaltFilter.getText().toLowerCase() == null)
+                        && (mitarbeiter.getAbteilung().toLowerCase().contains(abteilungFilter.getText().toLowerCase()) || abteilungFilter.getText().toLowerCase() == null)
+                        && (mitarbeiter.getStandort().toLowerCase().contains(standortFilter.getText().toLowerCase()) || standortFilter.getText().toLowerCase() == null)
+                        && (mitarbeiter.getLand().toLowerCase().contains(landFilter.getText().toLowerCase()) || landFilter.getText().toLowerCase() == null);
     }
 
     private void load() {
@@ -188,14 +191,21 @@ public final class TabelleController implements EventHandler<TableColumn.CellEdi
                     tableData = FXCollections.observableArrayList();
                 }
                 else {
-                    Mitarbeiter addable = new ui.neu.Mitarbeiter(   temp[Mitarbeiter.COLUMN_ID],
-                                                                    temp[Mitarbeiter.COLUMN_VORNAME],
-                                                                    temp[Mitarbeiter.COLUMN_NAME],
-                                                                    temp[Mitarbeiter.COLUMN_GEHALT],
-                                                                    temp[Mitarbeiter.COLUMN_ABTEILUNG],
-                                                                    temp[Mitarbeiter.COLUMN_STANDORT],
-                                                                    temp[Mitarbeiter.COLUMN_LAND]
-                                                                );
+                    int idColumn = 0;
+                    int vornameColumn = 1;
+                    int nameColumn = 2;
+                    int gehaltColumn = 3;
+                    int abteilungColumn = 4;
+                    int standortColumn = 5;
+                    int landColumn = 6;
+                    Mitarbeiter addable = new ui.neu.Mitarbeiter(temp[idColumn],
+                            temp[vornameColumn],
+                            temp[nameColumn],
+                            temp[gehaltColumn],
+                            temp[abteilungColumn],
+                            temp[standortColumn],
+                            temp[landColumn]
+                    );
                     if (isHereAfterFiltering(addable)) {
                         tableData.add(addable);
                     }
@@ -216,30 +226,35 @@ public final class TabelleController implements EventHandler<TableColumn.CellEdi
         String columnName = t.getTableColumn().getText();
         String newVal = t.getNewValue();
         int column = t.getTablePosition().getColumn();
+        final int COLUMN_VORNAME = 1;
+        final int COLUMN_NAME = 2;
+        final int COLUMN_GEHALT = 3;
+        final int COLUMN_ABTEILUNG = 4;
         try {
             switch (column) {
-                case Mitarbeiter.COLUMN_VORNAME:
+                case COLUMN_VORNAME:
                     m.setVorname(newVal);
                     break;
-                case Mitarbeiter.COLUMN_NAME:
+                case COLUMN_NAME:
                     m.setName(newVal);
                     break;
-                case Mitarbeiter.COLUMN_GEHALT:
+                case COLUMN_GEHALT:
                     newVal = newVal.replace(" ", "");
                     newVal = newVal.replace("€", "");
                     newVal = newVal.replace(',', '.');
                     m.setGehalt(newVal);
                     break;
-                case Mitarbeiter.COLUMN_ABTEILUNG:
+                case COLUMN_ABTEILUNG:
                     m.setAbteilung(newVal);
                     break;
                 default:
                     break;
             }
+            load();
+            table.refresh();
         }
         catch (Exception e) {
             fehler.setText("Der Wert " + newVal + " ist fuer die Spalte " + columnName + " nicht zulaessig");
         }
-        table.refresh();
     }
 }

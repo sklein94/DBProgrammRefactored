@@ -15,8 +15,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 
-import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
+import java.math.BigDecimal;
+import java.sql.*;
 
 public final class TabelleController implements EventHandler<TableColumn.CellEditEvent<ui.neu.Mitarbeiter, String>> {
     @FXML
@@ -131,33 +131,114 @@ public final class TabelleController implements EventHandler<TableColumn.CellEdi
             public void handle(final MouseEvent event) {
                 String vornameAddString = vornameAdd.getText();
                 String nameAddString = nameAdd.getText();
-                String gehaltAddString = gehaltAdd.getText();
+                String gehaltAddString = gehaltAdd.getText().replace("€", "").replace(",", ".").replace(" ", "");
                 String abteilungAddString = abteilungAdd.getText();
                 Datenbank db = new Datenbank();
 
-                try {
-                    db.addMitarbeiter(vornameAddString, nameAddString, gehaltAddString, abteilungAddString);
+
+                if (validateParameters(vornameAddString, nameAddString, gehaltAddString, abteilungAddString)) {
+                    try {
+                        db.addMitarbeiter(vornameAddString, nameAddString, gehaltAddString, abteilungAddString);
+
+                        load();
+                        vornameAdd.clear();
+                        abteilungAdd.clear();
+                        gehaltAdd.clear();
+                        nameAdd.clear();
+                        fehler.setText("Mitarbeiter erfolgreich hinzugefuegt.");
+                    }
+                    catch (SQLIntegrityConstraintViolationException e) {
+                        fehler.setText("Es wurden nicht alle Felder richtig oder vollstaendig ausgefuellt!");
+                    }
+                    catch (SQLException sq) {
+                        fehler.setText("Konnte neuen Mitarbeiter nicht hinzufuegen.");
+                    }
 
                     load();
-                    vornameAdd.clear();
-                    abteilungAdd.clear();
-                    gehaltAdd.clear();
-                    nameAdd.clear();
-                    fehler.setText("Mitarbeiter erfolgreich hinzugefuegt.");
                 }
-                catch (SQLIntegrityConstraintViolationException e) {
-                    fehler.setText("Es wurden nicht alle Felder richtig oder vollstaendig ausgefuellt!");
-                }
-                catch (SQLException sq) {
-                    fehler.setText("Konnte neuen Mitarbeiter nicht hinzufuegen.");
-                }
-
-                load();
             }
         });
 
 
         table.setItems(tableData);
+    }
+
+    private boolean validateParameters(final String vorname, final String name, final String gehalt, final String abteilung) {
+        String failureText = "";
+
+        if (validateVorname(vorname) != null) {
+            failureText += validateVorname(vorname) + "\n";
+        }
+        if (validateNachname(name) != null) {
+            failureText += validateNachname(name) + "\n";
+        }
+        if (validateGehalt(gehalt) != null) {
+            failureText += validateGehalt(gehalt) + "\n";
+        }
+        if (validateAbteilung(abteilung) != null) {
+            failureText += validateAbteilung(abteilung) + "\n";
+        }
+
+        if (failureText.length() > 0) {
+            fehler.setText(failureText);
+            return false;
+        }
+        else return true;
+    }
+
+    private String validateVorname(final String vorname) {
+        if (vorname.length() < 2) {
+            return "Der Vorname ist zu kurz!";
+        }
+        else if (vorname.length() > 42) {
+            return "Der Vorname ist zu lang!";
+        }
+        else return null;
+    }
+
+    private String validateNachname(final String name) {
+        if (name.length() == 0) {
+            return "Der Name ist ein Pflichtfeld!";
+        }
+        else if (name.length() < 2) {
+            return "Der Name ist zu kurz!";
+        }
+        else if (name.length() > 42) {
+            return "Der Name ist zu lang!";
+        }
+        else return null;
+    }
+
+    private String validateGehalt(final String gehalt) {
+        if (gehalt.length() == 0) {
+            return "Das Gehalt ist ein Pflichtfeld!";
+        }
+        try {
+            BigDecimal bd = new BigDecimal(gehalt);
+        }
+        catch (NumberFormatException e) {
+            return "Das Gehalt enthaelt ungueltige Zeichen!";
+        }
+        return null;
+    }
+
+    private String validateAbteilung(final String abteilung) {
+        if (abteilung.length() == 0) {
+            return "Die Abteilung ist ein Pflichtfeld!";
+        }
+        try {
+            PreparedStatement ps = Datenbank.giveConnection().prepareStatement("SELECT COUNT(*) FROM Abteilung WHERE NAME=?");
+            ps.setString(1, abteilung);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            if (Integer.parseInt(rs.getString(1)) != 1) {
+                return "Die Abteilung existiert nicht!";
+            }
+        }
+        catch (SQLException e) {
+            return "Die Abteilung existiert nicht!";
+        }
+        return null;
     }
 
     private void addListenerToReloadOn(final TextField textField) {
@@ -251,7 +332,7 @@ public final class TabelleController implements EventHandler<TableColumn.CellEdi
             fehler.setText("Der Wert " + newVal + " ist fuer die Spalte " + columnName + " erfolgreich eingetragen worden.");
         }
         catch (Exception e) {
-            fehler.setText("Der Wert " + newVal + " ist fuer die Spalte " + columnName + " nicht zulaessig\n"+e.getMessage());
+            fehler.setText("Der Wert " + newVal + " ist fuer die Spalte " + columnName + " nicht zulaessig\n" + e.getMessage());
         }
         load();
         table.refresh();

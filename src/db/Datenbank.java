@@ -85,9 +85,8 @@ public final class Datenbank {
 
 
     public void addMitarbeiter(final String vorname, final String name, final String gehalt, final String abteilung) throws SQLException {
-        String next = "(SELECT MAX(ID)+1 FROM Mitarbeiter)";
         String abteilungID = "(SELECT ID FROM Abteilung WHERE Name=?)";
-        String sql = "INSERT INTO Mitarbeiter (ID, Vorname, Name, Gehalt, Abteilung_ID) VALUES (" + next + ", ?, ?, ?, " + abteilungID + ")";
+        String sql = "INSERT INTO Mitarbeiter (ID, Vorname, Name, Gehalt, Abteilung_ID) VALUES (M_NR.NEXTVAL, ?, ?, ?, " + abteilungID + ")";
         System.out.println(sql);
         PreparedStatement ps = con.prepareStatement(sql);
         ps.setString(1, vorname);

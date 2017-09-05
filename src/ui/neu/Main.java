@@ -24,7 +24,6 @@ public final class Main extends Application {
             primaryStage.show();
 
         } catch (IOException e) {
-            //e.printStackTrace();
         }
 
 

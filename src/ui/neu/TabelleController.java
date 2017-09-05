@@ -15,8 +15,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
@@ -147,7 +145,7 @@ public final class TabelleController implements EventHandler<TableColumn.CellEdi
                     nameAdd.clear();
                     fehler.setText("Mitarbeiter erfolgreich hinzugefuegt.");
                 }
-                catch (SQLIntegrityConstraintViolationException e){
+                catch (SQLIntegrityConstraintViolationException e) {
                     fehler.setText("Es wurden nicht alle Felder richtig oder vollstaendig ausgefuellt!");
                 }
                 catch (SQLException sq) {
@@ -250,11 +248,12 @@ public final class TabelleController implements EventHandler<TableColumn.CellEdi
                 default:
                     break;
             }
-            load();
-            table.refresh();
+            fehler.setText("Der Wert " + newVal + " ist fuer die Spalte " + columnName + " erfolgreich eingetragen worden.");
         }
         catch (Exception e) {
-            fehler.setText("Der Wert " + newVal + " ist fuer die Spalte " + columnName + " nicht zulaessig");
+            fehler.setText("Der Wert " + newVal + " ist fuer die Spalte " + columnName + " nicht zulaessig\n"+e.getMessage());
         }
+        load();
+        table.refresh();
     }
 }

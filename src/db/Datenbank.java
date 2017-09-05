@@ -103,7 +103,7 @@ public final class Datenbank {
     }
 
 
-    private static String loadFromConfig(String type) {
+    private static String loadFromConfig(final String type) {
         Properties prop = new Properties();
 
         try {

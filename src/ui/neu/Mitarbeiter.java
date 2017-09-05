@@ -1,13 +1,11 @@
 package ui.neu;
 
-import db.Datenbank;
+import ui.neu.db.Datenbank;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Mitarbeiter {

@@ -1,4 +1,4 @@
-package db;
+package ui.neu.db;
 
 
 import java.io.IOException;

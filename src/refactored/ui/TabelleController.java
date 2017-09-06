@@ -3,10 +3,14 @@ package refactored.ui;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.stage.Stage;
 import refactored.classes.Mitarbeiter;
 import refactored.db.Datenbank;
 import refactored.exceptions.IncompatibleAttributesException;
@@ -130,7 +134,12 @@ public final class TabelleController{
         vornameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         vornameColumn.setOnEditCommit(t -> {
             Mitarbeiter m = t.getTableView().getItems().get(t.getTablePosition().getRow());
-            m.setVorname(t.getNewValue());
+            try {
+                m.setVorname(t.getNewValue());
+            }
+            catch (IncompatibleAttributesException e){
+                popup(e.getMessage());
+            }
             load();
            });
 
@@ -138,7 +147,12 @@ public final class TabelleController{
         nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         nameColumn.setOnEditCommit(t -> {
             Mitarbeiter m = t.getTableView().getItems().get(t.getTablePosition().getRow());
-            m.setName(t.getNewValue());
+            try {
+                m.setName(t.getNewValue());
+            }
+            catch (IncompatibleAttributesException e){
+                popup(e.getMessage());
+            }
             load();
         });
 
@@ -146,7 +160,12 @@ public final class TabelleController{
         gehaltColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         gehaltColumn.setOnEditCommit(t -> {
             Mitarbeiter m = t.getTableView().getItems().get(t.getTablePosition().getRow());
-            m.setGehalt(t.getNewValue());
+            try {
+                m.setGehalt(t.getNewValue());
+            }
+            catch (IncompatibleAttributesException e){
+                popup(e.getMessage());
+            }
             load();
         });
 
@@ -154,7 +173,13 @@ public final class TabelleController{
         abteilungColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         abteilungColumn.setOnEditCommit(t -> {
             Mitarbeiter m = t.getTableView().getItems().get(t.getTablePosition().getRow());
-            m.setAbteilung(t.getNewValue());
+
+            try {
+                m.setAbteilung(t.getNewValue());
+            }
+            catch (IncompatibleAttributesException e){
+                popup(e.getMessage());
+            }
             load();
         });
 
@@ -245,5 +270,26 @@ public final class TabelleController{
                         && (mitarbeiter.getId().toLowerCase().contains(abteilungFilterField.getText().toLowerCase()) || abteilungFilterField.getText().length() == 0)
                         && (mitarbeiter.getId().toLowerCase().contains(standortFilterField.getText().toLowerCase()) || standortFilterField.getText().length() == 0)
                         && (mitarbeiter.getId().toLowerCase().contains(landFilterField.getText().toLowerCase()) || landFilterField.getText().length() == 0);
+    }
+
+
+    /**
+     * Erstellt ein neues Popup-Fenster mit einer Nachricht
+     *
+     * @param message Die Nachricht, die im Popup erscheint.
+     */
+    private void popup(final String message){
+        Stage stage = new Stage();
+        stage.setTitle("Error");
+
+        Group g = new Group();
+
+        Label l = new Label(message);
+
+        g.getChildren().addAll(l);
+
+        Scene scene = new Scene(g, 200, 200);
+        stage.setScene(scene);
+        stage.show();
     }
 }

@@ -78,6 +78,7 @@ public final class Mitarbeiter {
      * @param value Der Wert, auf den das Attribut gesetzt werden soll.
      */
     public void setId(final String value) throws IncompatibleAttributesException {
+        if (value.length() == 0) throw new IncompatibleAttributesException("Die ID ist ein Pflichtfeld!");
         try{
             Integer.parseInt(value);
         }
@@ -109,6 +110,8 @@ public final class Mitarbeiter {
      * @throws SQLException bei Fehlerfall
      */
     public void setVorname(final String value) throws IncompatibleAttributesException {
+        if (value.length() < 2 && value.length() > 0) throw new IncompatibleAttributesException("Der Vorname ist zu kurz!");
+        if (value.length() == 0) throw new IncompatibleAttributesException("Der Vorname ist ein Pflichtfeld!");
         vorname = new SimpleStringProperty(value);
         Connection con = null;
         PreparedStatement ps = null;
@@ -164,6 +167,8 @@ public final class Mitarbeiter {
      * @throws SQLException bei Fehlerfall.
      */
     public void setName(final String value) throws IncompatibleAttributesException {
+        if (value.length() < 2 && value.length() > 0) throw new IncompatibleAttributesException("Der Vorname ist zu kurz!");
+        if (value.length() == 0) throw new IncompatibleAttributesException("Der Vorname ist ein Pflichtfeld!");
         name = new SimpleStringProperty(value);
         Connection con = null;
         PreparedStatement ps = null;
@@ -218,6 +223,13 @@ public final class Mitarbeiter {
      * @param value Der Wert, auf den das Attribut gesetzt werden soll.
      */
     public void setGehalt(final String value) throws IncompatibleAttributesException {
+        try{
+            Double.parseDouble(value);
+        }
+        catch (NumberFormatException e){
+            throw new IncompatibleAttributesException("Das Gehalt enthaelt ungueltige Zeichen!");
+        }
+        if (value.length() == 0) throw new IncompatibleAttributesException("Das Gehalt ist ein Pflichtfeld!");
         gehalt = new SimpleStringProperty(value);
         Connection con = null;
         PreparedStatement ps = null;
@@ -272,6 +284,7 @@ public final class Mitarbeiter {
      * @param value Der Wert, auf den das Attribut gesetzt werden soll.
      */
     public void setAbteilung(final String value) throws IncompatibleAttributesException {
+        if (value.length() == 0) throw new IncompatibleAttributesException("Die Abteilung ist ein Pflichtfeld!");
         abteilung = new SimpleStringProperty(value);
         Connection con = null;
         PreparedStatement ps = null;
@@ -325,7 +338,7 @@ public final class Mitarbeiter {
      *
      * @param value Der Wert, auf den das Attribut gesetzt werden soll.
      */
-    public void setStandort(final String value) throws IncompatibleAttributesException {
+    public void setStandort(final String value){
         standort = new SimpleStringProperty(value);
     }
 
@@ -348,7 +361,7 @@ public final class Mitarbeiter {
      *
      * @param value Der Wert, auf den das Attribut gesetzt werden soll.
      */
-    public void setLand(final String value) throws IncompatibleAttributesException {
+    public void setLand(final String value) {
         land = new SimpleStringProperty(value);
     }
 

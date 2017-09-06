@@ -1,9 +1,7 @@
 package refactored.ui;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -11,10 +9,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTableCell;
 import refactored.classes.Mitarbeiter;
 import refactored.db.Datenbank;
+import refactored.exceptions.IncompatibleAttributesException;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Klasse zum Behandeln von allen Aktionen der Inhalte der Tabelle.
@@ -133,12 +130,7 @@ public final class TabelleController{
         vornameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         vornameColumn.setOnEditCommit(t -> {
             Mitarbeiter m = t.getTableView().getItems().get(t.getTablePosition().getRow());
-            try {
-                m.setVorname(t.getNewValue());
-            }
-            catch (SQLException e){
-                System.out.println("Konnte Mitarbeiter nicht umbenennen!");
-            }
+            m.setVorname(t.getNewValue());
             load();
            });
 
@@ -146,26 +138,29 @@ public final class TabelleController{
         nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         nameColumn.setOnEditCommit(t -> {
             Mitarbeiter m = t.getTableView().getItems().get(t.getTablePosition().getRow());
-            try {
-                m.setName(t.getNewValue());
-            }
-            catch (SQLException e){
-                System.out.println("Konnte Mitarbeiter nicht umbenennen!");
-            }
+            m.setName(t.getNewValue());
             load();
         });
 
         gehaltColumn.setCellValueFactory(cellData -> cellData.getValue().getPropertyGehalt());
         gehaltColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        gehaltColumn.setOnEditCommit(t -> {
+            Mitarbeiter m = t.getTableView().getItems().get(t.getTablePosition().getRow());
+            m.setGehalt(t.getNewValue());
+            load();
+        });
 
         abteilungColumn.setCellValueFactory(cellData -> cellData.getValue().getPropertyAbteilung());
         abteilungColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        abteilungColumn.setOnEditCommit(t -> {
+            Mitarbeiter m = t.getTableView().getItems().get(t.getTablePosition().getRow());
+            m.setAbteilung(t.getNewValue());
+            load();
+        });
 
         standortColumn.setCellValueFactory(cellData -> cellData.getValue().getPropertyStandort());
-        standortColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
         landColumn.setCellValueFactory(cellData -> cellData.getValue().getPropertyLand());
-        landColumn.setCellFactory(TextFieldTableCell.forTableColumn());
     }
 
     /**
@@ -174,11 +169,14 @@ public final class TabelleController{
      * Anschließend werden diese Werte in die Tabelle geschrieben.
      */
     private void load() {
-        Connection con = Datenbank.connect();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         tableData.clear();
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM Mitarbeiteruebersicht");
-            ResultSet rs = ps.executeQuery();
+            con = Datenbank.connect();
+            ps = con.prepareStatement("SELECT * FROM Mitarbeiteruebersicht");
+            rs = ps.executeQuery();
             while (rs.next()) {
                 Mitarbeiter m = new Mitarbeiter(
                         rs.getString("id"),
@@ -200,6 +198,35 @@ public final class TabelleController{
         }
         catch (SQLException e) {
             System.out.println("Fehler: " + e.getMessage());
+        }
+        catch (IncompatibleAttributesException e){
+            System.out.println("Ein Fehler beim Laden der Mitarbeiter aus der Datenbank ist aufgetreten!");
+        }
+        finally {
+            if (rs != null){
+                try{
+                    rs.close();
+                }
+                catch (SQLException e){
+                    System.out.println("Fehler beim Schließen des Datenbank-Results!");
+                }
+            }
+            if (ps != null){
+                try{
+                    ps.close();
+                }
+                catch (SQLException e){
+                    System.out.println("Fehler beim Schließen des Datenbank-Statements!");
+                }
+            }
+            if (con != null){
+                try{
+                    con.close();
+                }
+                catch (SQLException e){
+                    System.out.println("Fehler beim Schließen der Datenbank-Connection!");
+                }
+            }
         }
 
     }

@@ -214,7 +214,7 @@ public final class TabelleController implements EventHandler<TableColumn.CellEdi
             return "Das Gehalt ist ein Pflichtfeld!";
         }
         try {
-            BigDecimal bd = new BigDecimal(gehalt);
+            new BigDecimal(gehalt);
         }
         catch (NumberFormatException e) {
             return "Das Gehalt enthaelt ungueltige Zeichen!";

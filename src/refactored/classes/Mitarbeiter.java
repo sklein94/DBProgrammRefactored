@@ -3,12 +3,11 @@ package refactored.classes;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import refactored.db.Datenbank;
+import refactored.exceptions.IncompatibleAttributesException;
 
-import javax.swing.plaf.nimbus.State;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * Die Klasse Mitarbeiter dient dazu, eine gesamte Tabellenreihe in den Attributen zu speichern.
@@ -63,14 +62,14 @@ public final class Mitarbeiter {
                        final String gehaltParam,
                        final String abteilungParam,
                        final String standortParam,
-                       final String landParam) {
-        this.id = new SimpleStringProperty(idParam);
-        this.vorname = new SimpleStringProperty(vornameParam);
-        this.name = new SimpleStringProperty(nameParam);
-        this.gehalt = new SimpleStringProperty(gehaltParam);
-        this.abteilung = new SimpleStringProperty(abteilungParam);
-        this.standort = new SimpleStringProperty(standortParam);
-        this.land = new SimpleStringProperty(landParam);
+                       final String landParam) throws IncompatibleAttributesException {
+        this.setId(idParam);
+        this.setVorname(vornameParam);
+        this.setName(nameParam);
+        this.setGehalt(gehaltParam);
+        this.setAbteilung(abteilungParam);
+        this.setStandort(standortParam);
+        this.setLand(landParam);
     }
 
     /**
@@ -78,8 +77,14 @@ public final class Mitarbeiter {
      *
      * @param value Der Wert, auf den das Attribut gesetzt werden soll.
      */
-    public void setId(final String value) {
-        vorname = new SimpleStringProperty(value);
+    public void setId(final String value) throws IncompatibleAttributesException {
+        try{
+            Integer.parseInt(value);
+        }
+        catch (NumberFormatException e){
+            throw new IncompatibleAttributesException("Die ID enthaelt ungueltige Zeichen!");
+        }
+        id = new SimpleStringProperty(value);
     }
 
     /**
@@ -103,15 +108,39 @@ public final class Mitarbeiter {
      * @param value Der Wert, auf den das Attribut gesetzt werden soll.
      * @throws SQLException bei Fehlerfall
      */
-    public void setVorname(final String value) throws SQLException {
+    public void setVorname(final String value) throws IncompatibleAttributesException {
         vorname = new SimpleStringProperty(value);
-        Connection con = Datenbank.connect();
-        PreparedStatement ps = con.prepareStatement("UPDATE MITARBEITER SET VORNAME=? WHERE ID=?");
-        ps.setString(1, value);
-        ps.setString(2, this.getId());
-        ps.executeUpdate();
-        ps.close();
-        con.close();
+        Connection con = null;
+        PreparedStatement ps = null;
+        try {
+            con = Datenbank.connect();
+            ps = con.prepareStatement("UPDATE MITARBEITER SET VORNAME=? WHERE ID=?");
+            ps.setString(1, value);
+            ps.setString(2, this.getId());
+            ps.executeUpdate();
+        }
+        catch (SQLException e) {
+            System.out.println("Fehler beim setzen des Gehaltes!");
+        }
+        finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                }
+                catch (SQLException e) {
+                    System.out.println("Fehler beim Schließen des Datenbank-Statements.");
+                }
+            }
+            if (con != null) {
+                try {
+                    con.close();
+                }
+                catch (SQLException e) {
+                    System.out.println("Fehler beim Schließen der Datenbank-Connection.");
+                }
+            }
+
+        }
     }
 
     /**
@@ -131,18 +160,42 @@ public final class Mitarbeiter {
     /**
      * Setzt ein Attribut auf einen Wert.
      *
-     * @throws SQLException bei Fehlerfall.
      * @param value Der Wert, auf den das Attribut gesetzt werden soll.
+     * @throws SQLException bei Fehlerfall.
      */
-    public void setName(final String value) throws SQLException{
+    public void setName(final String value) throws IncompatibleAttributesException {
         name = new SimpleStringProperty(value);
-        Connection con = Datenbank.connect();
-        PreparedStatement ps = con.prepareStatement("UPDATE MITARBEITER SET NAME=? WHERE ID=?");
-        ps.setString(1, value);
-        ps.setString(2, this.getId());
-        ps.executeUpdate();
-        ps.close();
-        con.close();
+        Connection con = null;
+        PreparedStatement ps = null;
+        try {
+            con = Datenbank.connect();
+            ps = con.prepareStatement("UPDATE MITARBEITER SET NAME=? WHERE ID=?");
+            ps.setString(1, value);
+            ps.setString(2, this.getId());
+            ps.executeUpdate();
+        }
+        catch (SQLException e) {
+            System.out.println("Fehler beim setzen des Gehaltes!");
+        }
+        finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                }
+                catch (SQLException e) {
+                    System.out.println("Fehler beim Schließen des Datenbank-Statements.");
+                }
+            }
+            if (con != null) {
+                try {
+                    con.close();
+                }
+                catch (SQLException e) {
+                    System.out.println("Fehler beim Schließen der Datenbank-Connection.");
+                }
+            }
+
+        }
     }
 
     /**
@@ -164,8 +217,39 @@ public final class Mitarbeiter {
      *
      * @param value Der Wert, auf den das Attribut gesetzt werden soll.
      */
-    public void setGehalt(final String value) {
+    public void setGehalt(final String value) throws IncompatibleAttributesException {
         gehalt = new SimpleStringProperty(value);
+        Connection con = null;
+        PreparedStatement ps = null;
+        try {
+            con = Datenbank.connect();
+            ps = con.prepareStatement("UPDATE MITARBEITER SET GEHALT=? WHERE ID=?");
+            ps.setString(1, value);
+            ps.setString(2, this.getId());
+            ps.executeUpdate();
+        }
+        catch (SQLException e) {
+            System.out.println("Fehler beim setzen des Gehaltes!");
+        }
+        finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                }
+                catch (SQLException e) {
+                    System.out.println("Fehler beim Schließen des Datenbank-Statements.");
+                }
+            }
+            if (con != null) {
+                try {
+                    con.close();
+                }
+                catch (SQLException e) {
+                    System.out.println("Fehler beim Schließen der Datenbank-Connection.");
+                }
+            }
+
+        }
     }
 
     /**
@@ -187,16 +271,39 @@ public final class Mitarbeiter {
      *
      * @param value Der Wert, auf den das Attribut gesetzt werden soll.
      */
-    public void setAbteilung(final String value) throws SQLException{
+    public void setAbteilung(final String value) throws IncompatibleAttributesException {
         abteilung = new SimpleStringProperty(value);
-        Connection con = Datenbank.connect();
-        //TODO
-        /*PreparedStatement ps = con.prepareStatement("UPDATE MITARBEITER SET NAME=? WHERE ID=?");
-        ps.setString(1, value);
-        ps.setString(2, this.getId());
-        ps.executeUpdate();
-        ps.close();
-        con.close();*/
+        Connection con = null;
+        PreparedStatement ps = null;
+        try {
+            con = Datenbank.connect();
+            ps = con.prepareStatement("UPDATE MITARBEITER SET ABTEILUNG_ID=(SELECT ID FROM ABTEILUNG WHERE NAME=?) WHERE ID=?");
+            ps.setString(1, value);
+            ps.setString(2, this.getId());
+            ps.executeUpdate();
+        }
+        catch (SQLException e) {
+            System.out.println("Fehler beim setzen des Gehaltes!");
+        }
+        finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                }
+                catch (SQLException e) {
+                    System.out.println("Fehler beim Schließen des Datenbank-Statements.");
+                }
+            }
+            if (con != null) {
+                try {
+                    con.close();
+                }
+                catch (SQLException e) {
+                    System.out.println("Fehler beim Schließen der Datenbank-Connection.");
+                }
+            }
+
+        }
     }
 
     /**
@@ -218,7 +325,7 @@ public final class Mitarbeiter {
      *
      * @param value Der Wert, auf den das Attribut gesetzt werden soll.
      */
-    public void setStandort(final String value) {
+    public void setStandort(final String value) throws IncompatibleAttributesException {
         standort = new SimpleStringProperty(value);
     }
 
@@ -241,7 +348,7 @@ public final class Mitarbeiter {
      *
      * @param value Der Wert, auf den das Attribut gesetzt werden soll.
      */
-    public void setLand(final String value) {
+    public void setLand(final String value) throws IncompatibleAttributesException {
         land = new SimpleStringProperty(value);
     }
 
@@ -257,5 +364,42 @@ public final class Mitarbeiter {
      */
     public StringProperty getPropertyLand() {
         return land;
+    }
+
+    public void addToDatabase() {
+        String sql = "INSERT INTO Mitarbeiter (ID, Vorname, Name, Gehalt, Abteilung) VALUES (M_NR.NEXTVAL, ?, ?, ?, (SELECT ID FROM ABTEILUNG WHERE NAME=?))";
+        Connection con = null;
+        PreparedStatement ps = null;
+        try {
+            con = Datenbank.connect();
+            ps = con.prepareStatement(sql);
+            ps.setString(1, this.getVorname());
+            ps.setString(1, this.getName());
+            ps.setString(1, this.getGehalt());
+            ps.setString(1, this.getAbteilung());
+            ps.executeUpdate();
+        }
+        catch (SQLException e) {
+            System.out.println("Fehler beim Erstellen der Datenbank-Connection!");
+        }
+        finally {
+
+            if (ps != null) {
+                try {
+                    ps.close();
+                }
+                catch (SQLException e) {
+                    System.out.println("Fehler beim Schließen des Datenbank-Statements.");
+                }
+            }
+            if (con != null) {
+                try {
+                    con.close();
+                }
+                catch (SQLException e) {
+                    System.out.println("Fehler beim Schließen der Datenbank-Connection.");
+                }
+            }
+        }
     }
 }

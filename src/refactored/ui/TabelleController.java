@@ -128,7 +128,6 @@ public final class TabelleController{
         table.setItems(tableData);
 
         idColumn.setCellValueFactory(cellData -> cellData.getValue().getPropertyId());
-        idColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
         vornameColumn.setCellValueFactory(cellData -> cellData.getValue().getPropertyVorname());
         vornameColumn.setCellFactory(TextFieldTableCell.forTableColumn());

@@ -107,6 +107,7 @@ public final class Datenbank {
                 ps.setString(i + 1, arguments[i]);
             }
             returnValue = ps.executeUpdate();
+            con.commit();
         }
         catch (SQLException e) {
             System.out.println("Fehler beim Erstellen der Datenbank-Connection!");
@@ -157,6 +158,7 @@ public final class Datenbank {
                 }
                 returnValue.add(temp);
             }
+            con.commit();
         }
         catch (SQLException e) {
             System.out.println("Fehler beim Erstellen der Datenbank-Connection!");

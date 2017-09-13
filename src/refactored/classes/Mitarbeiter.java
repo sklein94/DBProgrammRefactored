@@ -7,6 +7,7 @@ import refactored.exceptions.IncompatibleAttributesException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Die Klasse Mitarbeiter dient dazu, eine gesamte Tabellenreihe in den Attributen zu speichern.
@@ -199,8 +200,8 @@ public final class Mitarbeiter {
      */
     public void setAbteilung(final String value) throws IncompatibleAttributesException {
         if (value.length() == 0) throw new IncompatibleAttributesException("Die Abteilung ist ein Pflichtfeld!");
-        String[][] resultAsStringArray = Datenbank.resultSQL("SELECT COUNT(*) AS Anzahl FROM Abteilung WHERE Name=?", value);
-        System.out.println(resultAsStringArray[0][0]);
+        List<String[]> resultsAsStringArray = Datenbank.resultSQL("SELECT COUNT(*) AS Anzahl FROM Abteilung WHERE Name=?", value);
+        if (Integer.parseInt(resultsAsStringArray.get(0)[0]) != 1) throw new IncompatibleAttributesException("Abteilung " + value + " nicht gefunden!");
         abteilung = new SimpleStringProperty(value);
         String sql = "UPDATE MITARBEITER SET ABTEILUNG_ID=(SELECT ID FROM ABTEILUNG WHERE NAME=?) WHERE ID=?";
         Datenbank.updateSQL(sql, value, getId());

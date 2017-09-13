@@ -135,41 +135,41 @@ public final class Datenbank {
     /**
      * Führt die SQL-Query als Prepared Statement aus. Gibt dabei ein ResultSet zurück.
      */
-    public static String[][] resultSQL(final String sqlQuery, final String... arguments) {
+    public static List<String[]> resultSQL(final String sqlQuery, final String... arguments) {
         Connection con = null;
         PreparedStatement ps = null;
-        String[][] returnValue = new String[1][1];
+        ResultSet rs = null;
+        ResultSetMetaData rsmd = null;
+        List<String[]> returnValue = new ArrayList<>();
         try {
             con = connect();
             ps = con.prepareStatement(sqlQuery);
             for (int i = 0; i < arguments.length; i++) {
                 ps.setString(i + 1, arguments[i]);
             }
-            ResultSet rs = ps.executeQuery();
-            ResultSetMetaData rsmd = rs.getMetaData();
-            List<List<String>> rows = new ArrayList<>();
-            List<String> column = new ArrayList<>();
+            rs = ps.executeQuery();
+            rsmd = rs.getMetaData();
+            int columns = rsmd.getColumnCount();
             while (rs.next()) {
-                column.clear();
-                for (int i = 0; i < rsmd.getColumnCount(); i++) {
-                    column.add(rs.getString(i));
+                String[] temp = new String[columns];
+                for (int i = 0; i < temp.length; i++) {
+                    temp[i] = rs.getString(i + 1);
                 }
-                rows.add(column);
-            }
-            returnValue = new String[rows.size()][column.size()];
-            int countRow = 0;
-            for (List<String> tmp : rows) {
-                int countCol = 0;
-                for (String tmps : tmp) {
-                    returnValue[countRow][countCol++] = tmps;
-                }
-                countRow++;
+                returnValue.add(temp);
             }
         }
         catch (SQLException e) {
             System.out.println("Fehler beim Erstellen der Datenbank-Connection!");
         }
         finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                }
+                catch (SQLException e) {
+                    System.out.println("Fehler beim Schließen des Datenbank-Result-Sets.");
+                }
+            }
             if (ps != null) {
                 try {
                     ps.close();

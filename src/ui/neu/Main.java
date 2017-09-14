@@ -18,6 +18,7 @@ public final class Main extends Application {
             FXMLLoader loader = new FXMLLoader(Main.class.getResource("Tabelle.fxml"));
             AnchorPane page = loader.load();
             Scene scene = new Scene(page);
+            scene.getStylesheets().add("/ui/neu/style.css");
 
             //Setze Scene
             primaryStage.setScene(scene);

@@ -107,7 +107,6 @@ public final class TabelleController implements EventHandler<TableColumn.CellEdi
         gehalt.setCellValueFactory(cellData ->
                 Bindings.format("%.2f €", Double.valueOf(cellData.getValue().getGehalt())));
 
-
         abteilung.setCellValueFactory(cellData -> cellData.getValue().getAbteilungProperty());
         abteilung.setCellFactory(TextFieldTableCell.forTableColumn());
         abteilung.setOnEditCommit(this);

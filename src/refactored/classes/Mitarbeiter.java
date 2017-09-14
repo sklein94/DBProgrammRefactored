@@ -274,7 +274,7 @@ public final class Mitarbeiter {
         List<String[]> resultsAsStringArray = Datenbank.resultSQL("SELECT COUNT(*) AS Anzahl FROM Land WHERE Name=?", getLand());
         if (Integer.parseInt(resultsAsStringArray.get(0)[0]) != 1){
             String sql = "INSERT INTO Land (ID, )"; //todo
-            Datenbank.updateSQL()
+            //Datenbank.updateSQL()
         }
 
         String sql = "INSERT INTO Mitarbeiter (ID, Vorname, Name, Gehalt, Abteilung) VALUES (M_NR.NEXTVAL, ?, ?, ?, (SELECT ID FROM ABTEILUNG WHERE NAME=?))";

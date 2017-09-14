@@ -28,6 +28,26 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/src/ui/neu/Main.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/ui/neu/Tabelle.fxml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/ui/neu/TabelleController.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/src/ui/neu/style.css">
+          <value>
+            <set />
+          </value>
+        </entry>
       </map>
     </option>
   </component>

@@ -1,0 +1,26 @@
+.root{
+    -fx-background-color: #c6d2ff;
+}
+
+.search{
+    -fx-background-color: #56caff;
+}
+
+.field{
+    -fx-background-color: #c7d2ff;
+    -fx-border-color: black;
+    -fx-border-width: 2px;
+}
+
+#table{
+    -fx-border-width: 1px;
+    -fx-border-color: black;
+}
+
+.field:hover{
+    -fx-background-color: red;
+}
+
+
+
+
